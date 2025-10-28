@@ -1,0 +1,409 @@
+/* Professional Report Styling for Enterprise Documentation */
+
+body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #333;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+}
+
+/* Executive Summary Styling */
+.executive-summary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+/* Headers */
+h1 {
+    color: #2c3e50;
+    font-size: 24pt;
+    font-weight: bold;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 10px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    page-break-before: always;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+h1:first-of-type {
+    page-break-before: avoid;
+    text-align: center;
+    font-size: 28pt;
+    color: #2c3e50;
+    border-bottom: none;
+    margin-bottom: 40px;
+}
+
+h2 {
+    color: #34495e;
+    font-size: 18pt;
+    font-weight: bold;
+    border-bottom: 2px solid #bdc3c7;
+    padding-bottom: 8px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    page-break-after: avoid;
+}
+
+h3 {
+    color: #7f8c8d;
+    font-size: 14pt;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+}
+
+h4 {
+    color: #95a5a6;
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 8px;
+}
+
+/* Table Styling */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 15px 0;
+    font-size: 10pt;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    padding: 12px 8px;
+    text-align: left;
+    vertical-align: top;
+    border: 1px solid #5a6bcc;
+}
+
+td {
+    border: 1px solid #ddd;
+    padding: 10px 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f0f8ff;
+}
+
+/* Code Styling */
+code {
+    background-color: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 9pt;
+    color: #e74c3c;
+    border: 1px solid #e9ecef;
+}
+
+pre {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+    overflow-x: auto;
+    font-size: 9pt;
+    margin: 15px 0;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    page-break-inside: avoid;
+}
+
+pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border: none;
+    font-size: inherit;
+}
+
+/* Special Content Boxes */
+.metrics {
+    background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%);
+    padding: 20px;
+    border-left: 6px solid #27ae60;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.warning {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+    padding: 20px;
+    border-left: 6px solid #e17055;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.info {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    color: white;
+    padding: 20px;
+    border-left: 6px solid #0984e3;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Lists */
+ul, ol {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
+li {
+    margin: 5px 0;
+    line-height: 1.6;
+}
+
+/* Blockquotes */
+blockquote {
+    border-left: 4px solid #3498db;
+    padding-left: 20px;
+    margin: 20px 0;
+    font-style: italic;
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 0 8px 8px 0;
+}
+
+/* Links */
+a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* Performance Indicators */
+.performance-metric {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.success {
+    background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+}
+
+.warning-metric {
+    background: linear-gradient(135deg, #fdcb6e 0%, #e84393 100%);
+}
+
+.critical {
+    background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+}
+
+/* Status Indicators */
+.status-success::before {
+    content: "✅ ";
+    font-weight: bold;
+}
+
+.status-warning::before {
+    content: "⚠️ ";
+    font-weight: bold;
+}
+
+.status-error::before {
+    content: "❌ ";
+    font-weight: bold;
+}
+
+.status-info::before {
+    content: "ℹ️ ";
+    font-weight: bold;
+}
+
+/* Mermaid Diagram Styling */
+.mermaid {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Print-specific Styles */
+@media print {
+    body {
+        font-size: 10pt;
+        margin: 0;
+        padding: 15px;
+    }
+    
+    h1 {
+        page-break-before: always;
+        font-size: 20pt;
+    }
+    
+    h1:first-of-type {
+        page-break-before: avoid;
+        font-size: 24pt;
+    }
+    
+    h2, h3, h4 {
+        page-break-after: avoid;
+    }
+    
+    table {
+        page-break-inside: avoid;
+        font-size: 9pt;
+    }
+    
+    pre {
+        page-break-inside: avoid;
+        font-size: 8pt;
+    }
+    
+    .metrics, .warning, .info {
+        page-break-inside: avoid;
+    }
+    
+    /* Avoid orphans and widows */
+    p, li {
+        orphans: 3;
+        widows: 3;
+    }
+    
+    /* Keep elements together */
+    h2, h3, h4 {
+        keep-with-next: always;
+    }
+}
+
+/* Page Layout */
+@page {
+    margin: 2.5cm 2cm;
+    size: A4;
+    
+    @top-left {
+        content: "Enterprise ML Platform";
+        font-size: 8pt;
+        color: #7f8c8d;
+        font-style: italic;
+    }
+    
+    @top-center {
+        content: "Company Bankruptcy Prediction System";
+        font-size: 9pt;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+    
+    @top-right {
+        content: "Confidential";
+        font-size: 8pt;
+        color: #7f8c8d;
+        font-style: italic;
+    }
+    
+    @bottom-left {
+        content: "© 2025 AI/ML Engineering Team";
+        font-size: 8pt;
+        color: #7f8c8d;
+    }
+    
+    @bottom-center {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 9pt;
+        color: #2c3e50;
+    }
+    
+    @bottom-right {
+        content: "Enterprise Edition v2.0";
+        font-size: 8pt;
+        color: #7f8c8d;
+    }
+}
+
+/* Title Page Styling */
+.title-page {
+    text-align: center;
+    page-break-after: always;
+    margin-top: 30%;
+}
+
+.title-page h1 {
+    font-size: 32pt;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    border: none;
+    page-break-before: avoid;
+}
+
+.title-page .subtitle {
+    font-size: 18pt;
+    color: #7f8c8d;
+    margin-bottom: 50px;
+}
+
+.title-page .metadata {
+    font-size: 12pt;
+    color: #95a5a6;
+    line-height: 2;
+}
+
+/* Table of Contents Styling */
+.toc {
+    page-break-after: always;
+}
+
+.toc h1 {
+    page-break-before: avoid;
+}
+
+/* Section Dividers */
+.section-divider {
+    border-top: 3px solid #3498db;
+    margin: 40px 0 20px 0;
+    page-break-before: always;
+}
+
+/* Responsive Design for Digital Viewing */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+        font-size: 12pt;
+    }
+    
+    table {
+        font-size: 11pt;
+    }
+    
+    h1 {
+        font-size: 20pt;
+    }
+    
+    h2 {
+        font-size: 16pt;
+    }
+}

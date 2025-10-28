@@ -1,0 +1,183 @@
+# Production Docker Compose Configuration
+# Optimized for production deployment with monitoring, logging, and security
+
+version: '3.8'
+
+services:
+  # Main application service
+  bankruptcy-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: production
+    image: bankruptcy-prediction:production
+    container_name: bankruptcy-api-prod
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_WORKERS=4
+      - LOG_LEVEL=INFO
+      - ENVIRONMENT=production
+      - ENABLE_METRICS=true
+      - ENABLE_CORS=true
+    volumes:
+      - ../outputs:/app/outputs:ro
+      - logs:/app/logs
+    networks:
+      - bankruptcy-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+
+  # Nginx reverse proxy for load balancing and SSL termination
+  nginx:
+    image: nginx:alpine
+    container_name: bankruptcy-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - logs:/var/log/nginx
+    networks:
+      - bankruptcy-network
+    depends_on:
+      bankruptcy-api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: bankruptcy-redis-prod
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks:
+      - bankruptcy-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: bankruptcy-prometheus-prod
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - bankruptcy-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  # Grafana for monitoring dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: bankruptcy-grafana-prod
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - bankruptcy-network
+    depends_on:
+      - prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # Log aggregation with Fluentd
+  fluentd:
+    build:
+      context: ./logging
+      dockerfile: Dockerfile
+    container_name: bankruptcy-fluentd-prod
+    restart: unless-stopped
+    volumes:
+      - logs:/fluentd/log
+      - ./logging/conf:/fluentd/etc:ro
+    networks:
+      - bankruptcy-network
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  bankruptcy-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  logs:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

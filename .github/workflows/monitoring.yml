@@ -1,0 +1,325 @@
+name: Model Performance Monitoring
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_environment:
+        description: 'Environment to test'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+jobs:
+  model-performance-check:
+    runs-on: ubuntu-latest
+    name: Monitor Model Performance
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install requests matplotlib seaborn
+        
+    - name: Create test data for monitoring
+      run: |
+        python -c "
+        import pandas as pd
+        import numpy as np
+        import json
+        from datetime import datetime
+        
+        # Generate test data
+        np.random.seed(int(datetime.now().timestamp()) % 1000)
+        n_samples = 100
+        data = {f'X{i+1}': np.random.randn(n_samples) for i in range(95)}
+        data['Bankrupt?'] = np.random.binomial(1, 0.1, n_samples)
+        df = pd.DataFrame(data)
+        df.to_csv('monitoring_data.csv', index=False)
+        
+        # Create monitoring report template
+        report = {
+            'timestamp': datetime.now().isoformat(),
+            'environment': '${{ github.event.inputs.test_environment || 'production' }}',
+            'data_samples': n_samples,
+            'data_quality': 'good',
+            'model_performance': {},
+            'alerts': []
+        }
+        
+        with open('monitoring_report.json', 'w') as f:
+            json.dump(report, f, indent=2)
+        "
+        
+    - name: Run model performance evaluation
+      run: |
+        python -c "
+        import json
+        import pandas as pd
+        import numpy as np
+        from datetime import datetime
+        import sys
+        sys.path.append('src')
+        
+        try:
+            from src.config import Config, DEFAULT_MODEL_CONFIGS
+            from src.data import DataProcessor
+            from src.models import ModelFactory, ModelEvaluator
+            
+            # Load monitoring data
+            df = pd.read_csv('monitoring_data.csv')
+            print(f'✅ Loaded {len(df)} samples for monitoring')
+            
+            # Process data
+            config = Config()
+            config.feature_selection = True
+            config.max_features = 30
+            
+            processor = DataProcessor(config)
+            X, y = processor.preprocess_data(df)
+            
+            # Split for evaluation
+            from sklearn.model_selection import train_test_split
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+            
+            # Scale features
+            X_train_scaled, X_test_scaled = processor.scale_features(X_train, X_test)
+            
+            # Test multiple models
+            results = []
+            for model_type in ['logistic_regression', 'random_forest']:
+                for model_config in DEFAULT_MODEL_CONFIGS[model_type]:
+                    try:
+                        model = ModelFactory.create_model(model_type, model_config)
+                        model.fit(X_train_scaled, y_train)
+                        
+                        y_pred = model.predict(X_test_scaled)
+                        y_pred_proba = model.predict_proba(X_test_scaled)
+                        
+                        result = ModelEvaluator.evaluate_model(y_test, y_pred, y_pred_proba, model_config.name)
+                        results.append(result)
+                        
+                    except Exception as e:
+                        print(f'❌ Failed to evaluate {model_config.name}: {e}')
+            
+            # Load existing monitoring report
+            with open('monitoring_report.json', 'r') as f:
+                report = json.load(f)
+            
+            # Update with performance results
+            report['model_performance'] = {
+                'models_evaluated': len(results),
+                'best_f1_score': max(r['f1_score'] for r in results) if results else 0,
+                'best_accuracy': max(r['accuracy'] for r in results) if results else 0,
+                'results': results
+            }
+            
+            # Performance thresholds
+            min_f1_threshold = 0.3
+            min_accuracy_threshold = 0.9
+            
+            best_f1 = report['model_performance']['best_f1_score']
+            best_accuracy = report['model_performance']['best_accuracy']
+            
+            # Check for performance degradation
+            if best_f1 < min_f1_threshold:
+                report['alerts'].append({
+                    'level': 'warning',
+                    'message': f'F1-score below threshold: {best_f1:.4f} < {min_f1_threshold}',
+                    'timestamp': datetime.now().isoformat()
+                })
+            
+            if best_accuracy < min_accuracy_threshold:
+                report['alerts'].append({
+                    'level': 'warning', 
+                    'message': f'Accuracy below threshold: {best_accuracy:.4f} < {min_accuracy_threshold}',
+                    'timestamp': datetime.now().isoformat()
+                })
+            
+            # Save updated report
+            with open('monitoring_report.json', 'w') as f:
+                json.dump(report, f, indent=2)
+            
+            print('✅ Model performance monitoring completed')
+            print(f'Best F1-Score: {best_f1:.4f}')
+            print(f'Best Accuracy: {best_accuracy:.4f}')
+            print(f'Alerts: {len(report[\"alerts\"])}')
+            
+        except Exception as e:
+            print(f'❌ Monitoring failed: {e}')
+            # Create error report
+            with open('monitoring_report.json', 'r') as f:
+                report = json.load(f)
+            report['alerts'].append({
+                'level': 'error',
+                'message': f'Monitoring script failed: {str(e)}',
+                'timestamp': datetime.now().isoformat()
+            })
+            with open('monitoring_report.json', 'w') as f:
+                json.dump(report, f, indent=2)
+        "
+        
+    - name: Generate monitoring dashboard
+      run: |
+        python -c "
+        import json
+        import matplotlib.pyplot as plt
+        import pandas as pd
+        from datetime import datetime
+        
+        # Load monitoring report
+        with open('monitoring_report.json', 'r') as f:
+            report = json.load(f)
+        
+        # Create performance visualization
+        if report['model_performance']['results']:
+            results = report['model_performance']['results']
+            df_results = pd.DataFrame(results)
+            
+            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
+            
+            # F1-Score comparison
+            df_results.plot(x='model_name', y='f1_score', kind='bar', ax=ax1, color='skyblue')
+            ax1.set_title('Model F1-Scores')
+            ax1.set_ylabel('F1-Score')
+            ax1.tick_params(axis='x', rotation=45)
+            
+            # Accuracy comparison
+            df_results.plot(x='model_name', y='accuracy', kind='bar', ax=ax2, color='lightgreen')
+            ax2.set_title('Model Accuracy')
+            ax2.set_ylabel('Accuracy')
+            ax2.tick_params(axis='x', rotation=45)
+            
+            # ROC-AUC comparison
+            df_results.plot(x='model_name', y='roc_auc', kind='bar', ax=ax3, color='salmon')
+            ax3.set_title('Model ROC-AUC')
+            ax3.set_ylabel('ROC-AUC')
+            ax3.tick_params(axis='x', rotation=45)
+            
+            # Performance summary
+            metrics = ['accuracy', 'precision', 'recall', 'f1_score', 'roc_auc']
+            best_idx = df_results['f1_score'].idxmax()
+            best_model = df_results.loc[best_idx]
+            
+            ax4.bar(metrics, [best_model[m] for m in metrics], color='gold')
+            ax4.set_title(f'Best Model Performance: {best_model[\"model_name\"]}')
+            ax4.set_ylabel('Score')
+            ax4.set_ylim(0, 1)
+            
+            plt.tight_layout()
+            plt.savefig('model_performance_dashboard.png', dpi=300, bbox_inches='tight')
+            print('✅ Performance dashboard generated')
+        else:
+            print('❌ No performance data available for dashboard')
+        
+        # Generate HTML report
+        html_report = f'''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Model Performance Monitoring Report</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 40px; }}
+                .header {{ background-color: #f0f0f0; padding: 20px; border-radius: 5px; }}
+                .alert {{ padding: 10px; margin: 10px 0; border-radius: 5px; }}
+                .warning {{ background-color: #fff3cd; border: 1px solid #ffeaa7; }}
+                .error {{ background-color: #f8d7da; border: 1px solid #f5c6cb; }}
+                .success {{ background-color: #d4edda; border: 1px solid #c3e6cb; }}
+                table {{ border-collapse: collapse; width: 100%; }}
+                th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+                th {{ background-color: #f2f2f2; }}
+            </style>
+        </head>
+        <body>
+            <div class=\"header\">
+                <h1>🔍 Model Performance Monitoring Report</h1>
+                <p><strong>Generated:</strong> {report['timestamp']}</p>
+                <p><strong>Environment:</strong> {report['environment']}</p>
+                <p><strong>Data Samples:</strong> {report['data_samples']}</p>
+            </div>
+        '''
+        
+        # Add alerts section
+        if report['alerts']:
+            html_report += '<h2>🚨 Alerts</h2>'
+            for alert in report['alerts']:
+                level_class = alert['level']
+                html_report += f'<div class=\"alert {level_class}\">'
+                html_report += f'<strong>{alert[\"level\"].upper()}:</strong> {alert[\"message\"]}'
+                html_report += f'<br><small>{alert[\"timestamp\"]}</small>'
+                html_report += '</div>'
+        else:
+            html_report += '<div class=\"alert success\">✅ No alerts - All systems normal</div>'
+        
+        # Add performance metrics
+        if report['model_performance']['results']:
+            html_report += '<h2>📊 Model Performance</h2>'
+            html_report += f'<p><strong>Best F1-Score:</strong> {report[\"model_performance\"][\"best_f1_score\"]:.4f}</p>'
+            html_report += f'<p><strong>Best Accuracy:</strong> {report[\"model_performance\"][\"best_accuracy\"]:.4f}</p>'
+            
+            html_report += '<h3>Detailed Results</h3>'
+            html_report += '<table>'
+            html_report += '<tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>ROC-AUC</th></tr>'
+            
+            for result in report['model_performance']['results']:
+                html_report += f'<tr>'
+                html_report += f'<td>{result[\"model_name\"]}</td>'
+                html_report += f'<td>{result[\"accuracy\"]:.4f}</td>'
+                html_report += f'<td>{result[\"precision\"]:.4f}</td>'
+                html_report += f'<td>{result[\"recall\"]:.4f}</td>'
+                html_report += f'<td>{result[\"f1_score\"]:.4f}</td>'
+                html_report += f'<td>{result[\"roc_auc\"]:.4f}</td>'
+                html_report += f'</tr>'
+            
+            html_report += '</table>'
+        
+        html_report += '</body></html>'
+        
+        with open('monitoring_report.html', 'w') as f:
+            f.write(html_report)
+        
+        print('✅ HTML monitoring report generated')
+        "
+        
+    - name: Upload monitoring artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: monitoring-report-${{ github.run_number }}
+        path: |
+          monitoring_report.json
+          monitoring_report.html
+          model_performance_dashboard.png
+          
+    - name: Send notification on alerts
+      if: always()
+      run: |
+        python -c "
+        import json
+        
+        with open('monitoring_report.json', 'r') as f:
+            report = json.load(f)
+        
+        if report['alerts']:
+            print('🚨 ALERTS DETECTED!')
+            for alert in report['alerts']:
+                print(f'  {alert[\"level\"].upper()}: {alert[\"message\"]}')
+            
+            # Here you would send notifications (Slack, email, etc.)
+            print('📧 Notifications would be sent to the team')
+        else:
+            print('✅ No alerts - All systems healthy')
+        "

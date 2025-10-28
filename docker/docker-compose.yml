@@ -1,0 +1,26 @@
+# Docker Compose configuration for development
+version: '3.8'
+
+services:
+  bankruptcy-prediction:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./outputs:/app/outputs
+      - ./CompanyBankruptcyData.csv:/app/CompanyBankruptcyData.csv
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+  # Optional: Add a reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - bankruptcy-prediction
+    restart: unless-stopped

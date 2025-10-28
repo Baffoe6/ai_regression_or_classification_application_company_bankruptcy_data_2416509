@@ -1,0 +1,204 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bankruptcy-prediction-ingress
+  labels:
+    app: bankruptcy-prediction
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://yourdomain.com"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization"
+spec:
+  tls:
+  - hosts:
+    - api.yourdomain.com
+    - bankruptcy-api.yourdomain.com
+    secretName: bankruptcy-prediction-tls
+  rules:
+  - host: api.yourdomain.com
+    http:
+      paths:
+      - path: /api/v1/bankruptcy(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: bankruptcy-prediction-service
+            port:
+              number: 80
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: bankruptcy-prediction-service
+            port:
+              number: 80
+      - path: /docs
+        pathType: Exact
+        backend:
+          service:
+            name: bankruptcy-prediction-service
+            port:
+              number: 80
+      - path: /openapi.json
+        pathType: Exact
+        backend:
+          service:
+            name: bankruptcy-prediction-service
+            port:
+              number: 80
+  - host: bankruptcy-api.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bankruptcy-prediction-service
+            port:
+              number: 80
+
+---
+# Alternative ingress for monitoring endpoints
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bankruptcy-prediction-monitoring-ingress
+  labels:
+    app: bankruptcy-prediction
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: monitoring-auth
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - Monitoring'
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - monitoring.yourdomain.com
+    secretName: monitoring-tls
+  rules:
+  - host: monitoring.yourdomain.com
+    http:
+      paths:
+      - path: /metrics
+        pathType: Exact
+        backend:
+          service:
+            name: bankruptcy-prediction-service
+            port:
+              number: 9090
+      - path: /prometheus
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus-service
+            port:
+              number: 9090
+      - path: /grafana
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana-service
+            port:
+              number: 3000
+
+---
+# Network Policy for security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: bankruptcy-prediction-network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: bankruptcy-prediction
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 8000
+    - protocol: TCP
+      port: 9090
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+
+---
+# Secret for monitoring authentication
+apiVersion: v1
+kind: Secret
+metadata:
+  name: monitoring-auth
+type: Opaque
+data:
+  auth: YWRtaW46JDJ5JDEwJGNqUTlqVnl5dVNBTldzTW5uVXI3eWVyRlpILnY4SHFqVWJHLlAuOEVQYmRIeHZHYVhJczJT  # admin:monitoring_password
+
+---
+# TLS Certificate for Let's Encrypt
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bankruptcy-prediction-cert
+spec:
+  secretName: bankruptcy-prediction-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - api.yourdomain.com
+  - bankruptcy-api.yourdomain.com
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: monitoring-cert
+spec:
+  secretName: monitoring-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - monitoring.yourdomain.com
