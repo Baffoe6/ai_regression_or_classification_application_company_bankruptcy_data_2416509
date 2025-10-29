@@ -197,8 +197,8 @@ gcloud run deploy --image gcr.io/project/bankruptcy-prediction
 
 ### **Health Check**
 ```bash
-curl http://localhost:8000/health
-# Response: {"status": "healthy", "model_loaded": true, "features_count": 30}
+curl http://localhost:8000/api/v1/health
+# Response: {"status": "healthy", "models_loaded": 3, "available_models": [...]}
 ```
 
 ### **Single Prediction**
@@ -218,13 +218,12 @@ prediction_data = {
 }
 
 # Make prediction
-response = requests.post("http://localhost:8000/predict", json=prediction_data)
+response = requests.post("http://localhost:8000/api/v1/predict", json=prediction_data)
 result = response.json()
 
-print(f"Bankruptcy Probability: {result['bankruptcy_probability']:.2%}")
-print(f"Risk Level: {result['risk_level']}")
-print(f"Confidence: {result['confidence']:.2%}")
-print(f"Model Used: {result['model_name']}")
+print(f"Bankruptcy Probability: {result['probability']:.2%}")
+print(f"Risk Level: {result['confidence']}")
+print(f"Model Used: {result['model_used']}")
 ```
 
 ### **Batch Predictions**
@@ -238,17 +237,17 @@ batch_data = {
     ]
 }
 
-response = requests.post("http://localhost:8000/predict/batch", json=batch_data)
+response = requests.post("http://localhost:8000/api/v1/predict/batch", json=batch_data)
 results = response.json()
 
 for i, result in enumerate(results['predictions']):
-    print(f"Company {i+1}: {result['bankruptcy_probability']:.2%} risk")
+    print(f"Company {i+1}: {result['probability']:.2%} risk")
 ```
 
 ### **Get Required Features**
 ```bash
-curl http://localhost:8000/features
-# Returns: Complete list of 30 required features with descriptions
+curl http://localhost:8000/api/v1/features
+# Returns: Complete list of available features
 ```
 
 ## 🔄 **CI/CD Pipeline & DevOps**

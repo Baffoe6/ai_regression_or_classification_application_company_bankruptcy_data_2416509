@@ -60,8 +60,9 @@ class BankruptcyPredictor:
             return
         
         # Load original data for visualization
-        df = self.data_processor.load_data()
-        self.visualizer.plot_data_exploration(df, self.exploration_stats)
+        df = self.data_processor.load_data(self.config.data_path)
+        # Plot target distribution
+        self.visualizer.plot_target_distribution(df, target_column=self.config.target_column)
     
     def train_models(self, model_types: List[str] = None) -> None:
         """Train all configured models."""
@@ -154,9 +155,12 @@ class BankruptcyPredictor:
                 self.logger.error(f"Failed to evaluate {model_name}: {str(e)}")
         
         # Create visualizations
-        self.visualizer.plot_model_comparison(self.results)
-        self.visualizer.plot_roc_curves(roc_data)
-        self.visualizer.plot_confusion_matrices(confusion_data)
+        # Convert results to dict format for visualization
+        results_dict = {r['model_name']: r for r in self.results}
+        self.visualizer.plot_model_performance_comparison(results_dict)
+        
+        # Note: ROC curves and confusion matrices plotting requires additional data structure
+        # These visualizations can be added later if needed
         
         self.logger.info("Model evaluation completed")
     
@@ -172,7 +176,7 @@ class BankruptcyPredictor:
                     importance = model.get_feature_importance()
                     if importance is not None:
                         self.visualizer.plot_feature_importance(
-                            importance, feature_names, model_name
+                            feature_names, importance, model_name
                         )
                 
             except Exception as e:

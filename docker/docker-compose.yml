@@ -3,24 +3,19 @@ version: '3.8'
 
 services:
   bankruptcy-prediction:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: development
     ports:
       - "8000:8000"
     volumes:
-      - ./outputs:/app/outputs
-      - ./CompanyBankruptcyData.csv:/app/CompanyBankruptcyData.csv
+      - ../outputs:/app/outputs
+      - ../CompanyBankruptcyData.csv:/app/CompanyBankruptcyData.csv
+      - ../src:/app/src
     environment:
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
 
-  # Optional: Add a reverse proxy
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - bankruptcy-prediction
-    restart: unless-stopped
+  # Note: Nginx service removed - configure separately if needed

@@ -19,6 +19,19 @@ jupyter>=1.0.0
 joblib>=1.0.0
 python-multipart>=0.0.5
 
+# System monitoring
+psutil>=5.8.0
+
+# Visualization
+plotly>=5.0.0
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=3.0.0
+
+# HTTP requests for testing
+requests>=2.26.0
+
 # Optional: for advanced features
 # shap>=0.40.0
 # optuna>=2.10.0
