@@ -34,13 +34,12 @@ if __name__ == "__main__":
     print("💚 Health Check: http://localhost:8000/api/v1/health")
     print("🔗 Main API: http://localhost:8000/")
     print("\nPress CTRL+C to stop the server\n")
-    
+
     uvicorn.run(
         "src.api.main:app",
         host="0.0.0.0",
         port=8000,
         reload=False,
         log_level="info",
-        log_config=uvicorn_log_config
+        log_config=uvicorn_log_config,
     )
-

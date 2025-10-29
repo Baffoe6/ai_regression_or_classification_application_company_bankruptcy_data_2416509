@@ -11,17 +11,17 @@ from .models import (
     ModelMetrics,
     FeatureImportance,
     HealthResponse,
-    DataUploadResponse
+    DataUploadResponse,
 )
 
 __all__ = [
-    'app',
-    'get_application',
-    'router',
-    'PredictionRequest',
-    'PredictionResponse',
-    'ModelMetrics',
-    'FeatureImportance',
-    'HealthResponse',
-    'DataUploadResponse'
+    "app",
+    "get_application",
+    "router",
+    "PredictionRequest",
+    "PredictionResponse",
+    "ModelMetrics",
+    "FeatureImportance",
+    "HealthResponse",
+    "DataUploadResponse",
 ]
