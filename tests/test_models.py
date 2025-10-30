@@ -2,9 +2,9 @@
 Unit tests for the bankruptcy prediction modules.
 """
 
-import sys
 import os
 import shutil
+import sys
 import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
