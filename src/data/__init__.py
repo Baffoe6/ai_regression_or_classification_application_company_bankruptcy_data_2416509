@@ -7,6 +7,7 @@ import os
 from typing import Any, Optional, Tuple
 
 import numpy as np
+
 # Keep existing DataProcessor for compatibility
 import pandas as pd
 from sklearn.feature_selection import SelectKBest, f_classif
@@ -15,11 +16,17 @@ from sklearn.preprocessing import StandardScaler
 
 from ..config import Config
 from ..utils import get_logger
+
 # Import existing DataProcessor for backward compatibility
 from .processor import DataProcessor as NewDataProcessor
 from .processor import DataValidator
-from .validator import (BankruptcyDataSchema, DataQualityAnalyzer, DataSchema,
-                        analyze_data_quality, validate_bankruptcy_data)
+from .validator import (
+    BankruptcyDataSchema,
+    DataQualityAnalyzer,
+    DataSchema,
+    analyze_data_quality,
+    validate_bankruptcy_data,
+)
 
 logger = get_logger(__name__)
 

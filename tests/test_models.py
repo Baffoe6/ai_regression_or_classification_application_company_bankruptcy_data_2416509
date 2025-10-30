@@ -4,6 +4,7 @@ Unit tests for the bankruptcy prediction modules.
 
 import os
 import shutil
+
 # Import modules to test
 import sys
 import tempfile
