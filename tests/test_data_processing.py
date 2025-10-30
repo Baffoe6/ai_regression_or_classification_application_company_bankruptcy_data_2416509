@@ -6,7 +6,6 @@ Tests data loading, preprocessing, validation, and feature engineering.
 import os
 import sys
 import tempfile
-from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pandas as pd
