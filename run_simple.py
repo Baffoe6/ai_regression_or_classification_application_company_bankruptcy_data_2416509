@@ -21,12 +21,8 @@ def run_simple_pipeline():
         # Import required modules
         from src.config import DEFAULT_MODEL_CONFIGS, Config
         from src.data import DataProcessor
-        from src.models import (
-            LogisticRegressionModel,
-            ModelEvaluator,
-            ModelFactory,
-            RandomForestModel,
-        )
+        from src.models import (LogisticRegressionModel, ModelEvaluator,
+                                ModelFactory, RandomForestModel)
 
         # Load configuration
         config = Config()
