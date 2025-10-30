@@ -20,7 +20,6 @@ import requests
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-import simple_api
 from src.config import Config
 from src.pipeline import BankruptcyPredictor
 
