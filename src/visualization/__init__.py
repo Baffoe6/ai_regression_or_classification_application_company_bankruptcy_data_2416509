@@ -15,8 +15,7 @@ import seaborn as sns
 from plotly.subplots import make_subplots
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from sklearn.metrics import (auc, confusion_matrix, precision_recall_curve,
-                             roc_curve)
+from sklearn.metrics import auc, confusion_matrix, precision_recall_curve, roc_curve
 
 from ..config import Config
 from ..utils import get_logger
