@@ -4,6 +4,7 @@ This file provides a simple standalone API that can be run directly.
 """
 
 import uvicorn
+
 from src.api.main import app
 
 # Configure uvicorn logging

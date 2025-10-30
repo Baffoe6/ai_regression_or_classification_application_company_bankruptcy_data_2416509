@@ -5,6 +5,7 @@ Logging utilities for the bankruptcy prediction project.
 import logging
 import sys
 from typing import Optional
+
 from ..config import Config
 
 

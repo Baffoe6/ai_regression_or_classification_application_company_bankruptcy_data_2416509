@@ -2,10 +2,10 @@
 Configuration management for the bankruptcy prediction project.
 """
 
+import json
 import os
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
-import json
+from typing import Any, Dict, Optional
 
 
 @dataclass

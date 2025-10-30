@@ -2,10 +2,11 @@
 Monitoring and alerting configurations for enterprise deployment.
 """
 
-import os
-import yaml
-from typing import Dict, Any, List
 import json
+import os
+from typing import Any, Dict, List
+
+import yaml
 
 
 class MonitoringConfig:

@@ -3,27 +3,23 @@ Data processing module for bankruptcy prediction.
 Provides comprehensive data loading, preprocessing, validation, and quality analysis.
 """
 
-# Import existing DataProcessor for backward compatibility
-from .processor import DataProcessor as NewDataProcessor, DataValidator
-from .validator import (
-    DataSchema,
-    BankruptcyDataSchema,
-    DataQualityAnalyzer,
-    validate_bankruptcy_data,
-    analyze_data_quality,
-)
+import os
+from typing import Any, Optional, Tuple
 
+import numpy as np
 # Keep existing DataProcessor for compatibility
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.model_selection import train_test_split
-from typing import Tuple, Optional, Any
-import os
+from sklearn.preprocessing import StandardScaler
 
-from ..utils import get_logger
 from ..config import Config
+from ..utils import get_logger
+# Import existing DataProcessor for backward compatibility
+from .processor import DataProcessor as NewDataProcessor
+from .processor import DataValidator
+from .validator import (BankruptcyDataSchema, DataQualityAnalyzer, DataSchema,
+                        analyze_data_quality, validate_bankruptcy_data)
 
 logger = get_logger(__name__)
 

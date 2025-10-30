@@ -3,25 +3,26 @@ Integration tests for the complete bankruptcy prediction pipeline.
 Tests end-to-end workflows, API integration, and system behavior.
 """
 
-import pytest
-import pandas as pd
-import numpy as np
-import requests
 import json
-import time
-import subprocess
-import threading
 import os
+import subprocess
 import sys
-from unittest.mock import patch, MagicMock
 import tempfile
+import threading
+import time
+from unittest.mock import MagicMock, patch
+
+import numpy as np
+import pandas as pd
+import pytest
+import requests
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from src.pipeline import BankruptcyPredictor
-from src.config import Config
 import simple_api
+from src.config import Config
+from src.pipeline import BankruptcyPredictor
 
 
 class TestEndToEndPipeline:

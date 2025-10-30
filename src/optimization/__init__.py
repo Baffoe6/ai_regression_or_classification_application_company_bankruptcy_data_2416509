@@ -3,21 +3,22 @@ Advanced model optimization techniques including hyperparameter tuning,
 ensemble methods, and feature selection.
 """
 
-import numpy as np
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.ensemble import VotingClassifier, BaggingClassifier
-from sklearn.feature_selection import RFE, SelectFromModel, RFECV
-from sklearn.metrics import make_scorer, f1_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-import xgboost as xgb
-from typing import Dict, Any, List, Tuple, Optional
-import joblib
 import os
+from typing import Any, Dict, List, Optional, Tuple
 
-from ..utils import get_logger
+import joblib
+import numpy as np
+import xgboost as xgb
+from sklearn.ensemble import (BaggingClassifier, RandomForestClassifier,
+                              VotingClassifier)
+from sklearn.feature_selection import RFE, RFECV, SelectFromModel
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score, make_scorer
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+
 from ..config import Config
 from ..models import BaseModel, ModelFactory
+from ..utils import get_logger
 
 logger = get_logger(__name__)
 

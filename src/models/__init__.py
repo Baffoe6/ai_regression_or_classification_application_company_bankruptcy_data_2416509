@@ -2,23 +2,19 @@
 Simplified models module without TensorFlow dependency for initial testing.
 """
 
-import numpy as np
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score, StratifiedKFold
-from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score,
-    roc_auc_score,
-)
-from typing import Dict, Any, Tuple, Optional, List
-import joblib
 import os
+from typing import Any, Dict, List, Optional, Tuple
 
-from ..utils import get_logger
+import joblib
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (accuracy_score, f1_score, precision_score,
+                             recall_score, roc_auc_score)
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+
 from ..config import Config, ModelConfig
+from ..utils import get_logger
 
 logger = get_logger(__name__)
 

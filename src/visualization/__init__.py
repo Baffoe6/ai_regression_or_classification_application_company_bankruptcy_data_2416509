@@ -2,22 +2,24 @@
 Visualization utilities for bankruptcy prediction analysis.
 """
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.graph_objects as go
-import plotly.express as px
-from plotly.subplots import make_subplots
-import pandas as pd
-import numpy as np
-from typing import Dict, List, Tuple, Optional, Any
-import warnings
-from sklearn.metrics import confusion_matrix, roc_curve, auc, precision_recall_curve
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
 import os
+import warnings
+from typing import Any, Dict, List, Optional, Tuple
 
-from ..utils import get_logger
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import seaborn as sns
+from plotly.subplots import make_subplots
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.metrics import (auc, confusion_matrix, precision_recall_curve,
+                             roc_curve)
+
 from ..config import Config
+from ..utils import get_logger
 
 logger = get_logger(__name__)
 

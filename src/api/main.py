@@ -2,26 +2,27 @@
 FastAPI application factory and configuration.
 """
 
+import os
+import time
+from datetime import datetime
+from typing import Optional
+
+import psutil
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
-import time
-import psutil
-import os
-from datetime import datetime
-from typing import Optional
 
 from ..config import Config
 from ..utils import get_logger
-from .routes import router
 from .models import ErrorResponse
+from .routes import router
 
 logger = get_logger(__name__)
 

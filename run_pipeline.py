@@ -3,15 +3,15 @@ Main entry point for running the optimized bankruptcy prediction pipeline.
 """
 
 import argparse
-import sys
 import os
+import sys
 
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
 from src.config import Config, get_default_config
-from src.pipeline import BankruptcyPredictor
 from src.optimization import ModelOptimizer
+from src.pipeline import BankruptcyPredictor
 from src.utils import setup_logging
 
 

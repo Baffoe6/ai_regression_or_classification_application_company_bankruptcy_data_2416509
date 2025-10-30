@@ -2,21 +2,21 @@
 Unit tests for the bankruptcy prediction modules.
 """
 
-import unittest
-import numpy as np
-import pandas as pd
 import os
-import tempfile
 import shutil
-from unittest.mock import patch, MagicMock
-
 # Import modules to test
 import sys
+import tempfile
+import unittest
+from unittest.mock import MagicMock, patch
+
+import numpy as np
+import pandas as pd
 
 sys.path.append(".")
 from src.config import Config, get_default_config
 from src.data import DataProcessor
-from src.models import ModelFactory, ModelEvaluator
+from src.models import ModelEvaluator, ModelFactory
 from src.pipeline import BankruptcyPredictor
 
 

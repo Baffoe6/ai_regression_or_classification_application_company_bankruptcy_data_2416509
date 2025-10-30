@@ -2,8 +2,9 @@
 Simple runner for the bankruptcy prediction project without TensorFlow.
 """
 
-import sys
 import os
+import sys
+
 import numpy as np
 import pandas as pd
 
@@ -18,14 +19,10 @@ def run_simple_pipeline():
 
     try:
         # Import required modules
-        from src.config import Config, DEFAULT_MODEL_CONFIGS
+        from src.config import DEFAULT_MODEL_CONFIGS, Config
         from src.data import DataProcessor
-        from src.models import (
-            LogisticRegressionModel,
-            RandomForestModel,
-            ModelEvaluator,
-            ModelFactory,
-        )
+        from src.models import (LogisticRegressionModel, ModelEvaluator,
+                                ModelFactory, RandomForestModel)
 
         # Load configuration
         config = Config()
