@@ -3,12 +3,9 @@ Integration tests for the complete bankruptcy prediction pipeline.
 Tests end-to-end workflows, API integration, and system behavior.
 """
 
-import json
 import os
-import subprocess
 import sys
 import tempfile
-import threading
 import time
 from unittest.mock import MagicMock
 

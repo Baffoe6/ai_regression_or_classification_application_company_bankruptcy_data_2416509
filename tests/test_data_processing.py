@@ -15,8 +15,8 @@ import pytest
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from src.config import Config
-from src.data import DataProcessor
+from src.config import Config  # noqa: E402
+from src.data import DataProcessor  # noqa: E402
 
 
 class TestDataProcessor:
