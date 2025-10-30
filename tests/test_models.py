@@ -3,9 +3,6 @@ Unit tests for the bankruptcy prediction modules.
 """
 
 import sys
-
-sys.path.append(".")
-
 import os
 import shutil
 import tempfile
