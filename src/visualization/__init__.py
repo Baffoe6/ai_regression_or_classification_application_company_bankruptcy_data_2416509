@@ -12,10 +12,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import seaborn as sns
-from plotly.subplots import make_subplots
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
-from sklearn.metrics import auc, confusion_matrix
+from sklearn.metrics import confusion_matrix
 
 from ..config import Config
 from ..utils import get_logger
