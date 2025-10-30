@@ -13,26 +13,20 @@ import joblib
 import numpy as np
 import pandas as pd
 import psutil
-from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
+from fastapi import (APIRouter, BackgroundTasks, Depends, File, HTTPException,
+                     UploadFile)
 from fastapi.responses import FileResponse
 
 from ..config import Config
-from ..data import DataProcessor, analyze_data_quality, validate_bankruptcy_data
+from ..data import (DataProcessor, analyze_data_quality,
+                    validate_bankruptcy_data)
 from ..models import ModelManager
 from ..utils import get_logger
-from .models import (
-    BatchPredictionRequest,
-    BatchPredictionResponse,
-    DataUploadResponse,
-    FeatureImportance,
-    HealthResponse,
-    ModelInfo,
-    ModelMetrics,
-    ModelTrainingRequest,
-    ModelTrainingResponse,
-    PredictionRequest,
-    PredictionResponse,
-)
+from .models import (BatchPredictionRequest, BatchPredictionResponse,
+                     DataUploadResponse, FeatureImportance, HealthResponse,
+                     ModelInfo, ModelMetrics, ModelTrainingRequest,
+                     ModelTrainingResponse, PredictionRequest,
+                     PredictionResponse)
 
 logger = get_logger(__name__)
 
