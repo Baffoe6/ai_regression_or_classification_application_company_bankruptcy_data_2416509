@@ -269,16 +269,6 @@ class TestAPIIntegration:
 
     def test_api_prediction_endpoint(self):
         """Test API prediction functionality."""
-        # Mock prediction request
-        prediction_data = {
-            "features": {
-                "ROA(C)_before_interest_and_depreciation_before_interest": 0.1234,
-                "ROA(A)_before_interest_and_%_after_tax": 0.0987,
-                "Operating_Gross_Margin": 0.2341,
-                # ... other features
-            }
-        }
-
         # Mock prediction response
         prediction_response = {
             "bankruptcy_probability": 0.15,
@@ -296,14 +286,6 @@ class TestAPIIntegration:
 
     def test_api_batch_predictions(self):
         """Test API batch prediction functionality."""
-        # Mock batch request
-        batch_data = {
-            "predictions": [
-                {"features": {"feature1": 0.1, "feature2": 0.2}},
-                {"features": {"feature1": 0.3, "feature2": 0.4}},
-            ]
-        }
-
         # Mock batch response
         batch_response = {
             "predictions": [
@@ -321,9 +303,6 @@ class TestAPIIntegration:
 
     def test_api_error_handling(self):
         """Test API error handling."""
-        # Test invalid input
-        invalid_data = {"invalid": "data"}
-
         # Mock error response
         error_response = {
             "error": "Invalid input format",
